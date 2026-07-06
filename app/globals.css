@@ -1,26 +1,183 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  SiteChat theme system.
+  The active theme is set as data-theme on <html> — the assistant can switch
+  it at runtime via the set_app_theme tool. Every color in the app resolves
+  to one of these variables; nothing is hardcoded.
+*/
+
+:root,
+[data-theme="porcelain"] {
+  --bg: #f7f6f3;
+  --panel: #ffffff;
+  --panel-2: #f1efeb;
+  --line: rgba(20, 20, 18, 0.1);
+  --line-strong: rgba(20, 20, 18, 0.22);
+  --ink: #1a1915;
+  --ink-2: #5c5a52;
+  --ink-3: #8f8d84;
+  --accent: #c96442;
+  --accent-strong: #a94e30;
+  --accent-soft: rgba(201, 100, 66, 0.12);
+  --on-accent: #ffffff;
+  --ok: #1d9e75;
+  --ok-soft: rgba(29, 158, 117, 0.14);
+  --warn: #ba7517;
+  --danger: #d64545;
+  --shadow: 0 1px 2px rgba(20, 19, 16, 0.05), 0 8px 24px rgba(20, 19, 16, 0.06);
+}
+
+[data-theme="graphite"] {
+  --bg: #131314;
+  --panel: #1c1c1e;
+  --panel-2: #242427;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --ink: #f2f1ed;
+  --ink-2: #a5a49e;
+  --ink-3: #6f6e69;
+  --accent: #d97757;
+  --accent-strong: #e88a6a;
+  --accent-soft: rgba(217, 119, 87, 0.16);
+  --on-accent: #16130f;
+  --ok: #3ecf9b;
+  --ok-soft: rgba(62, 207, 155, 0.14);
+  --warn: #e3a04f;
+  --danger: #ef6a6a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="midnight"] {
+  --bg: #0b1020;
+  --panel: #121a30;
+  --panel-2: #1a2440;
+  --line: rgba(160, 185, 255, 0.12);
+  --line-strong: rgba(160, 185, 255, 0.28);
+  --ink: #e8edfb;
+  --ink-2: #9aa7cc;
+  --ink-3: #64719a;
+  --accent: #6f8dff;
+  --accent-strong: #8aa3ff;
+  --accent-soft: rgba(111, 141, 255, 0.16);
+  --on-accent: #060a18;
+  --ok: #45d6a4;
+  --ok-soft: rgba(69, 214, 164, 0.14);
+  --warn: #e8b45a;
+  --danger: #f0708a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 36px rgba(2, 6, 20, 0.6);
+}
+
+[data-theme="latte"] {
+  --bg: #f3ead9;
+  --panel: #fbf6ec;
+  --panel-2: #ecdfc8;
+  --line: rgba(74, 52, 25, 0.14);
+  --line-strong: rgba(74, 52, 25, 0.3);
+  --ink: #3a2c18;
+  --ink-2: #7a6547;
+  --ink-3: #a48f6f;
+  --accent: #8c5a2b;
+  --accent-strong: #6f4520;
+  --accent-soft: rgba(140, 90, 43, 0.14);
+  --on-accent: #fdf9f1;
+  --ok: #4c8a3f;
+  --ok-soft: rgba(76, 138, 63, 0.16);
+  --warn: #b07818;
+  --danger: #c0533e;
+  --shadow: 0 1px 2px rgba(74, 52, 25, 0.08), 0 8px 24px rgba(74, 52, 25, 0.1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth theme transitions — enabled after first interaction so initial load doesn't animate */
+html[data-anim="true"],
+html[data-anim="true"] *,
+html[data-anim="true"] *::before,
+html[data-anim="true"] *::after {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    fill 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.msg-in {
+  animation: fade-up 0.28s ease both;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
 }
