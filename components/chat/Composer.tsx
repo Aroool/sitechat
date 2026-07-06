@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useChatStore } from "@/lib/store/chatStore";
 import { sendUserMessage } from "@/lib/chat/dispatch";
@@ -9,6 +9,19 @@ export default function Composer() {
   const busy = useChatStore((s) => s.busy);
   const [value, setValue] = useState("");
   const ref = useRef<HTMLTextAreaElement>(null);
+
+  // "/" focuses the composer from anywhere (unless already typing somewhere).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (e.key === "/" && !["TEXTAREA", "INPUT"].includes(target.tagName)) {
+        e.preventDefault();
+        ref.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const submit = () => {
     const text = value.trim();

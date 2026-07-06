@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Sparkles,
   Monitor,
@@ -31,6 +32,14 @@ export default function TopBar() {
   const { theme, device, zen, projectName, setDevice, cycleTheme, setZen } =
     useUIStore();
   const { spec, html } = useSiteStore();
+  const [mode, setMode] = useState<"demo" | "claude" | null>(null);
+
+  useEffect(() => {
+    fetch("/api/chat")
+      .then((r) => r.json())
+      .then((d: { hasKey: boolean }) => setMode(d.hasKey ? "claude" : "demo"))
+      .catch(() => setMode("demo"));
+  }, []);
 
   const exportSite = () => {
     if (!spec) return;
@@ -58,6 +67,23 @@ export default function TopBar() {
           <span className="text-ink-3">/</span>
           <span className="truncate">{projectName}</span>
         </div>
+      )}
+
+      {mode && (
+        <span
+          title={
+            mode === "claude"
+              ? "Claude is driving this conversation via tool use"
+              : "Running the built-in demo engine — set ANTHROPIC_API_KEY for Claude mode"
+          }
+          className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
+            mode === "claude"
+              ? "border-accent bg-accent-soft text-accent"
+              : "border-line text-ink-3"
+          }`}
+        >
+          {mode}
+        </span>
       )}
 
       <div className="ml-auto flex items-center gap-1.5">
