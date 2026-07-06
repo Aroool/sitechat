@@ -8,7 +8,9 @@ import {
   Palette,
   PanelLeftClose,
   PanelLeftOpen,
+  Download,
 } from "lucide-react";
+import { useSiteStore } from "@/lib/store/siteStore";
 
 function GithubMark({ className }: { className?: string }) {
   return (
@@ -28,6 +30,19 @@ const DEVICES: { id: Device; icon: typeof Monitor; label: string }[] = [
 export default function TopBar() {
   const { theme, device, zen, projectName, setDevice, cycleTheme, setZen } =
     useUIStore();
+  const { spec, html } = useSiteStore();
+
+  const exportSite = () => {
+    if (!spec) return;
+    const slug = spec.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slug || "site"}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-panel px-4">
@@ -92,6 +107,17 @@ export default function TopBar() {
             <PanelLeftClose className="size-4" />
           )}
         </button>
+
+        {spec && (
+          <button
+            type="button"
+            onClick={exportSite}
+            className="flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-medium text-on-accent transition-colors hover:bg-accent-strong"
+          >
+            <Download className="size-3.5" />
+            Export
+          </button>
+        )}
 
         <a
           href="https://github.com/Aroool/sitechat"

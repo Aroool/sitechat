@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import TopBar from "@/components/TopBar";
 import ChatPanel from "@/components/chat/ChatPanel";
 import PreviewPanel from "@/components/preview/PreviewPanel";
+import ConfettiLayer from "@/components/ConfettiLayer";
 import { useUIStore, hydrateThemeFromDOM } from "@/lib/store/uiStore";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
 
   return (
     <div className="flex h-full flex-col">
+      <ConfettiLayer />
       <TopBar />
       <main
         className={`flex min-h-0 flex-1 ${
