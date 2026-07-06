@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import TopBar from "@/components/TopBar";
+import ChatPanel from "@/components/chat/ChatPanel";
 import { useUIStore, hydrateThemeFromDOM } from "@/lib/store/uiStore";
 
 export default function Home() {
@@ -25,9 +26,7 @@ export default function Home() {
             className="flex w-[400px] shrink-0 flex-col border-line bg-panel data-[side=left]:border-r data-[side=right]:border-l"
             data-side={chatSide}
           >
-            <div className="grid flex-1 place-items-center text-sm text-ink-3">
-              Chat panel — coming in the next commits
-            </div>
+            <ChatPanel />
           </section>
         )}
         <section aria-label="Live preview" className="min-w-0 flex-1 bg-bg">
