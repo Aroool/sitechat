@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import TopBar from "@/components/TopBar";
 import ChatPanel from "@/components/chat/ChatPanel";
+import PreviewPanel from "@/components/preview/PreviewPanel";
 import { useUIStore, hydrateThemeFromDOM } from "@/lib/store/uiStore";
 
 export default function Home() {
@@ -30,9 +31,7 @@ export default function Home() {
           </section>
         )}
         <section aria-label="Live preview" className="min-w-0 flex-1 bg-bg">
-          <div className="grid h-full place-items-center text-sm text-ink-3">
-            Preview panel — coming soon
-          </div>
+          <PreviewPanel />
         </section>
       </main>
     </div>
