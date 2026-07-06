@@ -1,6 +1,7 @@
 "use client";
 
 import { useChatStore } from "@/lib/store/chatStore";
+import { demoRespond } from "@/lib/engine/demoEngine";
 
 /**
  * Single entry point for user input — from the composer, a chip tap, or a
@@ -17,7 +18,13 @@ export async function sendUserMessage(text: string): Promise<void> {
   chat.addUserMessage(trimmed);
   chat.setBusy(true);
   try {
-    await respond(trimmed);
+    await demoRespond(trimmed);
+  } catch {
+    useChatStore
+      .getState()
+      .addAssistantMessage([
+        { type: "text", text: "Something went sideways on my end — try that again?" },
+      ]);
   } finally {
     useChatStore.getState().setBusy(false);
   }
@@ -32,20 +39,4 @@ export async function answerWithChip(
 ): Promise<void> {
   useChatStore.getState().selectChip(messageId, partIndex, optionId);
   await sendUserMessage(label);
-}
-
-// Temporary responder — replaced by the build engine in an upcoming commit.
-async function respond(text: string): Promise<void> {
-  const chat = useChatStore.getState();
-  await sleep(500);
-  chat.addAssistantMessage([
-    {
-      type: "text",
-      text: `The build engine lands in the next few commits — soon I'll turn "${text}" into a real website.`,
-    },
-  ]);
-}
-
-export function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
 }
