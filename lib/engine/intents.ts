@@ -101,8 +101,13 @@ export function detectSiteEditIntent(text: string): SiteEditIntent | null {
   );
   if (remove) return { kind: "remove-section", section: remove[1].toLowerCase() };
 
-  // Site restyle — theme words aimed at the site (or bare "make it dark").
-  if (/\b(theme|style|look|vibe|dark|light|colou?rs?)\b/i.test(text) && !APP_REF.test(text)) {
+  // Site restyle — a vibe/theme word aimed at the site: "make it premium",
+  // "change the theme to warm", "make the site dark".
+  const styleContext =
+    /\b(theme|style|look|vibe|colou?rs?|feel|mode)\b/i.test(text) ||
+    /\b(make|turn|switch|restyle|go|change)\b/i.test(text) ||
+    SITE_REF.test(text);
+  if (styleContext && !APP_REF.test(text)) {
     const named = SITE_THEME_WORDS.find(([re]) => re.test(text));
     if (named) return { kind: "site-theme", themeId: named[1] };
     if (/\bdark\b/i.test(text)) return { kind: "site-theme", themeId: "tech" };
