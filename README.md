@@ -22,12 +22,13 @@ you ──▶ chat ──▶ engine ─┬─▶ SiteSpec (typed sections + them
 
 The core design decision: **the AI never writes site code.** It fills a typed `SiteSpec` — an ordered list of 14 section types plus a theme id — and a deterministic renderer turns the spec into a self-contained HTML document. That keeps output quality reliable, edits surgical, and rendering instant.
 
-Two engines drive the same product:
+Three engines drive the same product (auto-detected, in priority order):
 
 | Mode | When | What drives it |
 |------|------|----------------|
-| **Demo** | no API key | a scripted state machine + regex intent detection (`lib/engine/`) |
-| **Claude** | `ANTHROPIC_API_KEY` set | a client-side tool-use agent loop (`lib/ai/`) — `ask_user` pauses for chips, `build_site` / `update_site` / UI tools execute in the browser |
+| **Claude** | `ANTHROPIC_API_KEY` set | a client-side tool-use agent loop (`lib/ai/claudeLoop.ts`) — `ask_user` pauses for chips, `build_site` / `update_site` / UI tools execute in the browser |
+| **Local AI** | [Ollama](https://ollama.com) running | the same agent loop through an Ollama adapter (`lib/ai/ollama.ts`) — free, private, no key. `brew install ollama && ollama pull qwen2.5:7b` |
+| **Demo** | neither | a scripted state machine + regex intent detection (`lib/engine/`) |
 
 The app's own theming mirrors the generated sites': every color resolves to CSS variables keyed off `data-theme` on `<html>`, so "restyle the whole app" is a one-attribute flip.
 
@@ -38,7 +39,14 @@ npm install
 npm run dev
 ```
 
-Works instantly with zero config (demo mode). For Claude mode:
+Works instantly with zero config (demo mode). For **free real AI** (no key, runs on your machine):
+
+```bash
+brew install ollama
+ollama pull qwen2.5:7b   # ~4.7GB, one time
+```
+
+Restart the dev server and the badge flips to `LOCAL AI`. For best quality (Claude):
 
 ```bash
 cp .env.example .env.local   # add your ANTHROPIC_API_KEY

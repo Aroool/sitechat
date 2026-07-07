@@ -32,12 +32,19 @@ export default function TopBar() {
   const { theme, device, zen, projectName, setDevice, cycleTheme, setZen } =
     useUIStore();
   const { spec, html } = useSiteStore();
-  const [mode, setMode] = useState<"demo" | "claude" | null>(null);
+  const [mode, setMode] = useState<"demo" | "claude" | "ollama" | null>(null);
+  const [localModel, setLocalModel] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/chat")
       .then((r) => r.json())
-      .then((d: { hasKey: boolean }) => setMode(d.hasKey ? "claude" : "demo"))
+      .then((d: { hasKey: boolean; ollama?: { available: boolean; model?: string } }) => {
+        if (d.hasKey) setMode("claude");
+        else if (d.ollama?.available) {
+          setMode("ollama");
+          setLocalModel(d.ollama.model ?? null);
+        } else setMode("demo");
+      })
       .catch(() => setMode("demo"));
   }, []);
 
@@ -74,15 +81,19 @@ export default function TopBar() {
           title={
             mode === "claude"
               ? "Claude is driving this conversation via tool use"
-              : "Running the built-in demo engine — set ANTHROPIC_API_KEY for Claude mode"
+              : mode === "ollama"
+                ? `Free local AI via Ollama (${localModel ?? "local model"}) — no API key needed`
+                : "Running the built-in demo engine — install Ollama or set ANTHROPIC_API_KEY for real AI"
           }
           className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
             mode === "claude"
               ? "border-accent bg-accent-soft text-accent"
-              : "border-line text-ink-3"
+              : mode === "ollama"
+                ? "border-ok bg-ok-soft text-ok"
+                : "border-line text-ink-3"
           }`}
         >
-          {mode}
+          {mode === "ollama" ? "local ai" : mode}
         </span>
       )}
 

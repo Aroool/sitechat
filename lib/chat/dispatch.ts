@@ -4,14 +4,19 @@ import { useChatStore } from "@/lib/store/chatStore";
 import { demoRespond } from "@/lib/engine/demoEngine";
 import { claudeRespond } from "@/lib/ai/claudeLoop";
 
-let mode: "demo" | "claude" | null = null;
+export type EngineMode = "demo" | "claude" | "ollama";
 
-async function resolveMode(): Promise<"demo" | "claude"> {
+let mode: EngineMode | null = null;
+
+async function resolveMode(): Promise<EngineMode> {
   if (mode) return mode;
   try {
     const res = await fetch("/api/chat");
-    const data = (await res.json()) as { hasKey: boolean };
-    mode = data.hasKey ? "claude" : "demo";
+    const data = (await res.json()) as {
+      hasKey: boolean;
+      ollama?: { available: boolean; model?: string };
+    };
+    mode = data.hasKey ? "claude" : data.ollama?.available ? "ollama" : "demo";
   } catch {
     mode = "demo";
   }
@@ -34,8 +39,8 @@ export async function sendUserMessage(text: string): Promise<void> {
   chat.setBusy(true);
   try {
     const engine = await resolveMode();
-    if (engine === "claude") await claudeRespond(trimmed);
-    else await demoRespond(trimmed);
+    if (engine === "demo") await demoRespond(trimmed);
+    else await claudeRespond(trimmed, engine);
   } catch {
     useChatStore
       .getState()

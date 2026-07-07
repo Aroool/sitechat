@@ -30,12 +30,50 @@ const SECTION_TYPES = new Set([
   "stats", "gallery", "menu", "about", "contact", "cta", "emailCapture", "footer",
 ]);
 
+/** Array fields the renderer maps over — must exist even if the model forgot them. */
+const ARRAY_FIELDS: Record<string, string[]> = {
+  navbar: ["links"],
+  features: ["items"],
+  productGrid: ["products"],
+  testimonials: ["items"],
+  pricing: ["plans"],
+  stats: ["items"],
+  gallery: ["items"],
+  menu: ["groups"],
+};
+
+const STRING_DEFAULTS: Record<string, Record<string, string>> = {
+  hero: { headline: "Welcome", sub: "", cta: "Learn more" },
+  features: { title: "Highlights" },
+  productGrid: { title: "Products" },
+  testimonials: { title: "What people say" },
+  pricing: { title: "Pricing" },
+  gallery: { title: "Gallery" },
+  menu: { title: "Menu" },
+  about: { title: "About", body: "" },
+  contact: { title: "Contact" },
+  cta: { headline: "Ready when you are", button: "Get started" },
+  emailCapture: { headline: "Stay in the loop", placeholder: "you@example.com", button: "Subscribe" },
+};
+
 function sanitizeSections(raw: unknown[]): Section[] {
   const out: Section[] = [];
   for (const item of raw) {
     if (!item || typeof item !== "object") continue;
     const s = item as Record<string, unknown>;
     if (typeof s.type !== "string" || !SECTION_TYPES.has(s.type)) continue;
+    for (const field of ARRAY_FIELDS[s.type] ?? []) {
+      if (!Array.isArray(s[field])) s[field] = [];
+    }
+    if (s.type === "menu") {
+      s.groups = (s.groups as Record<string, unknown>[]).map((g) => ({
+        name: typeof g?.name === "string" ? g.name : "Menu",
+        items: Array.isArray(g?.items) ? g.items : [],
+      }));
+    }
+    for (const [field, fallback] of Object.entries(STRING_DEFAULTS[s.type] ?? {})) {
+      if (typeof s[field] !== "string") s[field] = fallback;
+    }
     out.push({ ...s, id: sid(s.type) } as Section);
   }
   return out;
@@ -154,7 +192,10 @@ function toolDetail(block: ToolUseBlock): string {
   return "";
 }
 
-export async function claudeRespond(text: string): Promise<void> {
+export async function claudeRespond(
+  text: string,
+  engine: "claude" | "ollama" = "claude",
+): Promise<void> {
   const chat = useChatStore.getState();
 
   if (pendingAskId) {
@@ -171,7 +212,7 @@ export async function claudeRespond(text: string): Promise<void> {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: history }),
+      body: JSON.stringify({ messages: history, engine }),
     });
     if (!res.ok) {
       const err = (await res.json().catch(() => null)) as { error?: string } | null;
