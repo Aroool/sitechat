@@ -20,6 +20,7 @@ export type UIIntent =
   | { kind: "confetti" };
 
 export type SiteEditIntent =
+  | { kind: "undo" }
   | { kind: "site-theme"; themeId: SiteThemeId }
   | { kind: "headline"; text: string }
   | { kind: "rename"; name: string }
@@ -81,6 +82,10 @@ export function detectUIIntent(text: string, siteExists: boolean): UIIntent | nu
 }
 
 export function detectSiteEditIntent(text: string): SiteEditIntent | null {
+  if (/\b(undo|revert|roll ?back|put it back|go back to (?:the )?(?:previous|last|old))\b/i.test(text)) {
+    return { kind: "undo" };
+  }
+
   const headline = text.match(/\b(?:headline|title|heading)\b.*?\bto\b\s+["“']?(.+?)["”']?$/i);
   if (headline) return { kind: "headline", text: headline[1].trim() };
 

@@ -100,6 +100,8 @@ function sectionLabel(s: Section): string {
 
 async function build(themeId: SiteThemeId) {
   if (!flow) return;
+  // Rebuilding over an existing site? Make that undoable too.
+  site().snapshot();
   const recipe = RECIPES[flow.category];
   const spec = recipe.build({
     name: flow.name,
@@ -266,6 +268,15 @@ function handleSiteEdit(text: string): boolean {
   if (!intent || !s.spec) return false;
 
   switch (intent.kind) {
+    case "undo": {
+      const ok = s.undo();
+      if (ok) {
+        badge("undo_change", "()", "Rolled back to the previous version — check the preview.");
+      } else {
+        say("Nothing to undo yet — the site is still in its original state.");
+      }
+      return true;
+    }
     case "site-theme": {
       const theme = SITE_THEMES[intent.themeId];
       s.updateSpec((spec) => ({ ...spec, themeId: intent.themeId }));
