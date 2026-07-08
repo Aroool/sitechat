@@ -31,7 +31,7 @@ sections: ordered array. Every section has "type" plus fields:
 - footer: note?
 
 ## Editing
-Use update_site for changes to the current site. Operations are applied in order.
+Use update_site for changes to the current site. Operations are applied in order. If the user wants to undo, revert, or roll back the last change, call undo_change.
 
 ## Controlling your own interface
 You can restyle and rearrange the app itself when asked — set_app_theme (porcelain=light, graphite=dark, midnight=deep blue, latte=cream), set_chat_side, set_preview_device, set_zen_mode, celebrate. "Make yourself dark" means the app; "make it/the site dark" means the website (use update_site with themeId "tech" or "premium").
@@ -131,6 +131,12 @@ export const TOOLS = [
       },
       required: ["operations"],
     },
+  },
+  {
+    name: "undo_change",
+    description:
+      "Revert the site to how it was before the most recent change (edit or rebuild). Takes no input. Returns whether there was anything to undo.",
+    input_schema: { type: "object" as const, properties: {} },
   },
   {
     name: "set_app_theme",

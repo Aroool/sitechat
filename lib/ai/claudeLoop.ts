@@ -104,6 +104,7 @@ async function executeTool(block: ToolUseBlock): Promise<string> {
         themeId: (input.themeId as SiteSpec["themeId"]) ?? "minimal",
         sections,
       };
+      site.snapshot();
       await revealSite(spec);
       return `Built "${spec.name}" with ${sections.length} sections. It is now visible in the preview.`;
     }
@@ -163,6 +164,11 @@ async function executeTool(block: ToolUseBlock): Promise<string> {
       });
       return applied.length ? `Applied: ${applied.join(", ")}.` : "No operations applied.";
     }
+
+    case "undo_change":
+      return site.undo()
+        ? "Reverted — the site is back to its previous version."
+        : "Nothing to undo — no earlier version recorded.";
 
     case "set_app_theme":
       ui.setTheme(input.theme as Parameters<typeof ui.setTheme>[0]);
