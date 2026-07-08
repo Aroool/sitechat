@@ -39,7 +39,7 @@ npm install
 npm run dev
 ```
 
-Works instantly with zero config (demo mode). For **free real AI** (no key, runs on your machine):
+Works instantly with zero config (demo mode). Append `?engine=demo|ollama|claude` to force an engine. For **free real AI** (no key, runs on your machine):
 
 ```bash
 brew install ollama
@@ -58,6 +58,7 @@ cp .env.example .env.local   # add your ANTHROPIC_API_KEY
 - `build a portfolio site for a photographer`
 - `make a waitlist page for my coffee shop`
 - `change the headline to "Dinner is solved"`
+- `undo that` — any edit or rebuild is reversible (there's a toolbar button too)
 - `add a pricing section` · `remove testimonials`
 - `make the site premium` · `make it playful`
 - `make yourself dark mode` · `switch to midnight`
