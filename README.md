@@ -79,5 +79,3 @@ Next.js 16 · React 19 · TypeScript · Tailwind v4 · Zustand · Anthropic SDK 
 - [ ] Persist projects (localStorage first, then a database)
 
 ---
-
-Built with [Claude Code](https://claude.com/claude-code) — including this README.
