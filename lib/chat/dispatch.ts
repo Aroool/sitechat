@@ -10,6 +10,16 @@ let mode: EngineMode | null = null;
 
 async function resolveMode(): Promise<EngineMode> {
   if (mode) return mode;
+
+  // ?engine=demo|ollama|claude forces an engine — handy for testing and demos.
+  if (typeof window !== "undefined") {
+    const forced = new URLSearchParams(window.location.search).get("engine");
+    if (forced === "demo" || forced === "ollama" || forced === "claude") {
+      mode = forced;
+      return mode;
+    }
+  }
+
   try {
     const res = await fetch("/api/chat");
     const data = (await res.json()) as {
