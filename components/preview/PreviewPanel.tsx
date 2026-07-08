@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { MonitorSmartphone, RefreshCw, ExternalLink } from "lucide-react";
+import { MonitorSmartphone, RefreshCw, ExternalLink, Undo2 } from "lucide-react";
 import { useSiteStore } from "@/lib/store/siteStore";
 import { useUIStore } from "@/lib/store/uiStore";
 
@@ -31,7 +31,7 @@ function EmptyPreview() {
 }
 
 export default function PreviewPanel() {
-  const { html, spec, revision } = useSiteStore();
+  const { html, spec, revision, history, undo } = useSiteStore();
   const device = useUIStore((s) => s.device);
 
   const slug = useMemo(
@@ -65,6 +65,20 @@ export default function PreviewPanel() {
           {spec.sections.length} sections
         </span>
         <div className="ml-auto flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => undo()}
+            disabled={history.length === 0}
+            aria-label="Undo last change"
+            title={
+              history.length === 0
+                ? "Nothing to undo"
+                : `Undo last change (${history.length} step${history.length === 1 ? "" : "s"} back available)`
+            }
+            className="grid size-7 place-items-center rounded-md text-ink-3 transition-colors enabled:hover:bg-panel-2 enabled:hover:text-ink disabled:opacity-35"
+          >
+            <Undo2 className="size-3.5" />
+          </button>
           <button
             type="button"
             onClick={refresh}
