@@ -2,6 +2,7 @@
 
 import type Anthropic from "@anthropic-ai/sdk";
 import { sid, type Section, type SiteSpec } from "@/lib/builder/types";
+import { SITE_THEMES } from "@/lib/builder/themes";
 import { useChatStore } from "@/lib/store/chatStore";
 import { useSiteStore } from "@/lib/store/siteStore";
 import { useUIStore } from "@/lib/store/uiStore";
@@ -190,6 +191,14 @@ async function executeTool(block: ToolUseBlock): Promise<string> {
   }
 }
 
+/** If an ask_user option names a site theme, attach its id so the chip renders as a swatch. */
+function matchThemeId(label: string): string | undefined {
+  const l = label.toLowerCase();
+  return Object.values(SITE_THEMES).find(
+    (t) => l.includes(t.id) || l.includes(t.label.toLowerCase()),
+  )?.id;
+}
+
 function toolDetail(block: ToolUseBlock): string {
   const input = block.input as Record<string, unknown>;
   const first = Object.values(input)[0];
@@ -246,7 +255,11 @@ export async function claudeRespond(
           chat.appendPart(msgId, {
             type: "chips",
             question: input.question,
-            options: (input.options ?? []).map((label, i) => ({ id: `opt-${i}`, label })),
+            options: (input.options ?? []).map((label, i) => ({
+              id: `opt-${i}`,
+              label,
+              themeId: matchThemeId(label),
+            })),
           });
           pendingAskId = block.id;
           return; // pause the loop — user's answer resumes it

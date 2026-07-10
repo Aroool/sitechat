@@ -42,7 +42,7 @@ export const TOOLS = [
   {
     name: "ask_user",
     description:
-      "Ask the user one follow-up question with 2-4 tappable options. The user's next message is their answer (they may also type something custom). Ask one question at a time.",
+      "Ask the user one follow-up question with 2-4 tappable options. The user's next message is their answer (they may also type something custom). Ask one question at a time. When asking about the visual vibe, use the theme names (fresh, premium, playful, tech, minimal, warm) in the options — the UI renders those as color swatches.",
     input_schema: {
       type: "object" as const,
       properties: {
