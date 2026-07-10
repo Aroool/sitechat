@@ -68,11 +68,18 @@ function askForStage() {
       }
       break;
     case "awaiting-theme": {
-      const ids = THEME_SUGGESTIONS[flow.category] ?? ["minimal", "playful", "premium"];
-      ask(
-        "Last one — which vibe?",
-        ids.map((id) => `${SITE_THEMES[id as SiteThemeId].label} (${SITE_THEMES[id as SiteThemeId].vibe})`),
-      );
+      const ids = (THEME_SUGGESTIONS[flow.category] ?? ["minimal", "playful", "premium"]) as SiteThemeId[];
+      chat().addAssistantMessage([
+        {
+          type: "chips",
+          question: "Last one — which vibe?",
+          options: ids.map((id) => ({
+            id,
+            label: SITE_THEMES[id].label,
+            themeId: id,
+          })),
+        },
+      ]);
       break;
     }
   }

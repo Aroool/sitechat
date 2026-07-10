@@ -1,6 +1,8 @@
 export interface ChipOption {
   id: string;
   label: string;
+  /** When set, the chip renders as a visual theme swatch (colors + font). */
+  themeId?: string;
 }
 
 export type ProgressStatus = "pending" | "active" | "done";
