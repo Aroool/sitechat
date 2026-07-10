@@ -1,8 +1,69 @@
 "use client";
 
 import { Check, Loader2, Zap, Hammer } from "lucide-react";
-import type { ChatMessage, MessagePart } from "@/lib/chat/types";
+import type { ChatMessage, ChipOption, MessagePart } from "@/lib/chat/types";
 import { answerWithChip } from "@/lib/chat/dispatch";
+import { SITE_THEMES } from "@/lib/builder/themes";
+import type { SiteThemeId } from "@/lib/builder/types";
+
+function ThemeSwatchChip({
+  option,
+  selected,
+  answered,
+  onSelect,
+}: {
+  option: ChipOption;
+  selected: boolean;
+  answered: boolean;
+  onSelect: () => void;
+}) {
+  const theme = SITE_THEMES[option.themeId as SiteThemeId];
+  const c = theme.colors;
+  return (
+    <button
+      type="button"
+      disabled={answered}
+      onClick={onSelect}
+      className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all ${
+        selected
+          ? "border-accent bg-accent-soft"
+          : answered
+            ? "border-line opacity-50"
+            : "border-line hover:border-line-strong hover:bg-panel-2"
+      }`}
+    >
+      <span className="flex shrink-0 -space-x-1.5" aria-hidden>
+        {[c.primary, c.text, c.surface, c.bg].map((color, i) => (
+          <span
+            key={i}
+            className="inline-block size-4 rounded-full border border-line"
+            style={{ background: color, zIndex: 4 - i, position: "relative" }}
+          />
+        ))}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span
+          className="block truncate text-sm font-semibold text-ink"
+          style={{ fontFamily: theme.font.family }}
+        >
+          {theme.label}
+        </span>
+        <span className="block truncate text-xs text-ink-3">{theme.vibe}</span>
+      </span>
+      <span
+        className="grid size-7 shrink-0 place-items-center rounded-lg text-sm font-bold"
+        style={{
+          background: c.primary,
+          color: c.onPrimary,
+          fontFamily: theme.font.family,
+        }}
+        aria-hidden
+      >
+        Aa
+      </span>
+    </button>
+  );
+}
 
 function ChipsPart({
   messageId,
@@ -14,12 +75,28 @@ function ChipsPart({
   part: Extract<MessagePart, { type: "chips" }>;
 }) {
   const answered = part.selectedId !== undefined;
+  const hasSwatches = part.options.some((o) => o.themeId && SITE_THEMES[o.themeId as SiteThemeId]);
   return (
     <div>
       <p className="mb-2 text-sm leading-relaxed text-ink">{part.question}</p>
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label={part.question}>
+      <div
+        className={hasSwatches ? "flex flex-col gap-1.5" : "flex flex-wrap gap-1.5"}
+        role="group"
+        aria-label={part.question}
+      >
         {part.options.map((o) => {
           const selected = part.selectedId === o.id;
+          if (o.themeId && SITE_THEMES[o.themeId as SiteThemeId]) {
+            return (
+              <ThemeSwatchChip
+                key={o.id}
+                option={o}
+                selected={selected}
+                answered={answered}
+                onSelect={() => answerWithChip(messageId, partIndex, o.id, o.label)}
+              />
+            );
+          }
           return (
             <button
               key={o.id}

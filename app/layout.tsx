@@ -40,6 +40,13 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
+        {/* Site-theme fonts, one weight each — used by the theme swatch chips */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&family=Cormorant+Garamond:wght@600&family=Baloo+2:wght@600&family=Space+Grotesk:wght@600&family=Inter:wght@600&family=Lora:wght@600&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="h-full overflow-hidden">{children}</body>
     </html>
