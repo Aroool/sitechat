@@ -322,6 +322,20 @@ h3 { font-size: 1.05rem; }
 `;
 }
 
+const CATEGORY_FAVICON: Record<string, string> = {
+  ecommerce: "🛒",
+  saas: "⚡",
+  portfolio: "🎨",
+  local: "📍",
+  waitlist: "✉️",
+};
+
+function faviconHref(spec: SiteSpec): string {
+  const emoji = CATEGORY_FAVICON[spec.category] ?? "✦";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 /** Render a complete, self-contained HTML document from a SiteSpec. */
 export function renderSite(spec: SiteSpec): string {
   const t = SITE_THEMES[spec.themeId];
@@ -335,6 +349,7 @@ export function renderSite(spec: SiteSpec): string {
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(spec.name)}${spec.tagline ? ` — ${esc(spec.tagline)}` : ""}</title>
+<link rel="icon" href="${faviconHref(spec)}" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="${fontHref}" rel="stylesheet" />
