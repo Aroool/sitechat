@@ -38,6 +38,11 @@ interface Flow {
 
 let flow: Flow | null = null;
 
+/** Reset the questionnaire state (used by the new-project button). */
+export function resetFlow() {
+  flow = null;
+}
+
 const chat = () => useChatStore.getState();
 const site = () => useSiteStore.getState();
 

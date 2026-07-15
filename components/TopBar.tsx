@@ -10,8 +10,11 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Download,
+  RotateCcw,
 } from "lucide-react";
 import { useSiteStore } from "@/lib/store/siteStore";
+import { useChatStore } from "@/lib/store/chatStore";
+import { startOver } from "@/lib/chat/dispatch";
 
 function GithubMark({ className }: { className?: string }) {
   return (
@@ -32,6 +35,18 @@ export default function TopBar() {
   const { theme, device, zen, projectName, setDevice, cycleTheme, setZen } =
     useUIStore();
   const { spec, html } = useSiteStore();
+  const hasChat = useChatStore((s) => s.messages.length > 0);
+  const [confirmReset, setConfirmReset] = useState(false);
+
+  const handleReset = () => {
+    if (!confirmReset) {
+      setConfirmReset(true);
+      setTimeout(() => setConfirmReset(false), 3000);
+      return;
+    }
+    setConfirmReset(false);
+    startOver();
+  };
   const [mode, setMode] = useState<"demo" | "claude" | "ollama" | null>(null);
   const [localModel, setLocalModel] = useState<string | null>(null);
 
@@ -144,6 +159,22 @@ export default function TopBar() {
             <PanelLeftClose className="size-4" />
           )}
         </button>
+
+        {(spec || hasChat) && (
+          <button
+            type="button"
+            onClick={handleReset}
+            aria-label="Start a new project"
+            className={`flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs transition-all ${
+              confirmReset
+                ? "bg-danger/15 font-medium text-danger"
+                : "text-ink-2 hover:bg-panel-2 hover:text-ink"
+            }`}
+          >
+            <RotateCcw className="size-3.5" />
+            {confirmReset ? "Wipe it?" : "New"}
+          </button>
+        )}
 
         {spec && (
           <button

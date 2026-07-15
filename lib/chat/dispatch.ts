@@ -1,8 +1,17 @@
 "use client";
 
 import { useChatStore } from "@/lib/store/chatStore";
-import { demoRespond } from "@/lib/engine/demoEngine";
-import { claudeRespond } from "@/lib/ai/claudeLoop";
+import { useSiteStore } from "@/lib/store/siteStore";
+import { demoRespond, resetFlow } from "@/lib/engine/demoEngine";
+import { claudeRespond, resetClaudeSession } from "@/lib/ai/claudeLoop";
+
+/** Wipe the conversation, the site, and all engine state — a clean slate. */
+export function startOver(): void {
+  useChatStore.getState().reset();
+  useSiteStore.getState().clear();
+  resetFlow();
+  resetClaudeSession();
+}
 
 export type EngineMode = "demo" | "claude" | "ollama";
 
