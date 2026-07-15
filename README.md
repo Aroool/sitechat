@@ -1,5 +1,7 @@
 # SiteChat
 
+**Try it live → [sitechat-beryl.vercel.app](https://sitechat-beryl.vercel.app)**
+
 **Build websites by talking.** Describe the site you want — SiteChat asks two or three sharp follow-up questions, then builds it live in a side-by-side preview, section by section.
 
 And here's the twist: **the interface itself listens too.** Say *"make yourself dark mode"* and the app restyles itself. Say *"show it on mobile"* and the preview snaps into a phone frame. Say *"move the chat to the right"* and it does. No settings page — the chat **is** the settings.
