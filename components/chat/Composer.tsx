@@ -49,6 +49,9 @@ export default function Composer() {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               submit();
+            } else if (e.key === "Escape") {
+              setValue("");
+              e.currentTarget.style.height = "auto";
             }
           }}
           className="max-h-[120px] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed text-ink outline-none placeholder:text-ink-3 disabled:opacity-60"
