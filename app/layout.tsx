@@ -12,10 +12,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const description =
+  "Describe the site you want. SiteChat asks the right follow-up questions, builds it live, and even restyles its own interface on request.";
+
 export const metadata: Metadata = {
   title: "SiteChat — build websites by talking",
-  description:
-    "Describe the site you want. SiteChat asks the right follow-up questions, builds it live, and even restyles its own interface on request.",
+  description,
+  openGraph: {
+    title: "SiteChat — build websites by talking",
+    description,
+    siteName: "SiteChat",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "SiteChat — build websites by talking",
+    description,
+  },
 };
 
 // Runs before hydration so the saved theme applies without a flash.
