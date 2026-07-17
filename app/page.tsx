@@ -6,12 +6,23 @@ import ChatPanel from "@/components/chat/ChatPanel";
 import PreviewPanel from "@/components/preview/PreviewPanel";
 import ConfettiLayer from "@/components/ConfettiLayer";
 import { useUIStore, hydrateThemeFromDOM } from "@/lib/store/uiStore";
+import { restoreProject } from "@/lib/store/siteStore";
+import { useChatStore } from "@/lib/store/chatStore";
 
 export default function Home() {
   const { chatSide, zen } = useUIStore();
 
   useEffect(() => {
     hydrateThemeFromDOM();
+    if (restoreProject() && useChatStore.getState().messages.length === 0) {
+      const name = useUIStore.getState().projectName ?? "your site";
+      useChatStore.getState().addAssistantMessage([
+        {
+          type: "text",
+          text: `Welcome back — ${name} is right where you left it. Keep editing, or hit “New” up top for a clean slate.`,
+        },
+      ]);
+    }
   }, []);
 
   return (

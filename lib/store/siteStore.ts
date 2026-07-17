@@ -6,6 +6,16 @@ import { renderSite } from "@/lib/builder/render";
 import { useUIStore } from "./uiStore";
 
 const HISTORY_LIMIT = 30;
+const STORAGE_KEY = "sitechat.project";
+
+function persist(spec: SiteSpec | null, history: SiteSpec[]) {
+  try {
+    if (!spec) localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, JSON.stringify({ spec, history }));
+  } catch {
+    /* storage full or unavailable — persistence is best-effort */
+  }
+}
 
 export interface SiteState {
   spec: SiteSpec | null;
@@ -32,6 +42,7 @@ export const useSiteStore = create<SiteState>((set, get) => ({
   setSpec: (spec) => {
     set((s) => ({ spec, html: renderSite(spec), revision: s.revision + 1 }));
     useUIStore.getState().setProjectName(spec.name);
+    persist(spec, get().history);
   },
 
   snapshot: () => {
@@ -61,5 +72,24 @@ export const useSiteStore = create<SiteState>((set, get) => ({
   clear: () => {
     set({ spec: null, html: "", revision: 0, history: [] });
     useUIStore.getState().setProjectName(null);
+    persist(null, []);
   },
 }));
+
+/** Restore the last project from localStorage. Returns true if one was loaded. */
+export function restoreProject(): boolean {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const { spec, history } = JSON.parse(raw) as {
+      spec: SiteSpec;
+      history?: SiteSpec[];
+    };
+    if (!spec?.name || !Array.isArray(spec.sections)) return false;
+    useSiteStore.setState({ history: history ?? [] });
+    useSiteStore.getState().setSpec(spec);
+    return true;
+  } catch {
+    return false;
+  }
+}
